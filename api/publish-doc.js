@@ -87,16 +87,16 @@ async function driveExportHtml(fileId, accessToken) {
 }
 
 function sanitizeContent(html) {
+  // Disallow inline styles so site CSS controls typography/colors/sizing
   return sanitizeHtml(html, {
     allowedTags: [
-      'p','br','strong','em','ul','ol','li','a','img','blockquote','hr',
+      'p','br','strong','em','b','i','u','sup','sub','ul','ol','li','a','img','blockquote','hr',
       'h1','h2','h3','h4','h5','h6','pre','code','figure','figcaption',
       'table','thead','tbody','tr','th','td','span','div'
     ],
     allowedAttributes: {
       a: ['href','name','target','rel'],
-      img: ['src','alt'],
-      '*': ['style']
+      img: ['src','alt']
     },
     allowedSchemes: ['http','https','mailto'],
     transformTags: {
