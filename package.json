@@ -1,0 +1,13 @@
+{
+  "name": "katie-kormanik-site",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "google-auth-library": "^9.14.0",
+    "sanitize-html": "^2.13.0"
+  }
+}

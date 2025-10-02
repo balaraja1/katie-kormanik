@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publish Blog Post</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .admin-wrap { max-width: 780px; margin: 40px auto; padding: 0 20px; }
+    .admin-card { background: #f9f9f9; padding: 24px; border-radius: 8px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .field input[type="text"], .field input[type="date"], .field input[type="password"], .field textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn { display: inline-block; background: linear-gradient(135deg, #4db8a8, #3da195); color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; border: 0; cursor: pointer; }
+    .log { margin-top: 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; white-space: pre-wrap; background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 6px; }
+    .note { color: #666; font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <h1 class="logo"><a href="../index.html">KATIE KORMANIK</a></h1>
+      <nav class="nav">
+        <a href="../learn.html">Learn</a>
+        <a href="../blog.html">Blog</a>
+        <a href="https://www.linkedin.com/in/katiekormanik/" target="_blank">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="admin-wrap">
+        <h2 class="hero-title" style="text-align:left;">Publish a Google Doc</h2>
+        <div class="underline" style="margin-left:0;"></div>
+        <div class="admin-card">
+          <div class="field">
+            <label for="docUrl">Google Doc URL</label>
+            <input id="docUrl" type="text" placeholder="https://docs.google.com/document/d/XXXXXXXXXXXX/edit" />
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="title">Title (optional)</label>
+              <input id="title" type="text" placeholder="If blank, uses Doc title" />
+            </div>
+            <div class="field">
+              <label for="date">Publish date (optional)</label>
+              <input id="date" type="date" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="slug">Custom slug (optional)</label>
+              <input id="slug" type="text" placeholder="If blank, derived from title" />
+            </div>
+            <div class="field">
+              <label for="secret">Admin password</label>
+              <input id="secret" type="password" placeholder="Enter the ADMIN_SECRET" />
+            </div>
+          </div>
+          <button class="btn" id="publishBtn">Publish</button>
+          <p class="note">Images from the Doc will be saved to <code>images/blog/&lt;slug&gt;/</code>. The blog index and homepage recent posts will update automatically.</p>
+          <div class="log" id="log" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Katie Kormanik. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    $('publishBtn').addEventListener('click', async () => {
+      const docUrl = $('docUrl').value.trim();
+      const title = $('title').value.trim();
+      const date = $('date').value.trim();
+      const slug = $('slug').value.trim();
+      const secret = $('secret').value.trim();
+      const log = $('log');
+
+      log.style.display = 'block';
+      log.textContent = 'Publishing...';
+
+      try {
+        const r = await fetch('/api/publish-doc', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + secret
+          },
+          body: JSON.stringify({ docUrl, title: title || undefined, date: date || undefined, slug: slug || undefined })
+        });
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.error || 'Publish failed');
+        log.textContent = 'Success! ' + JSON.stringify(j, null, 2);
+      } catch (e) {
+        log.textContent = 'Error: ' + e.message;
+      }
+    });
+  </script>
+</body>
+</html>
